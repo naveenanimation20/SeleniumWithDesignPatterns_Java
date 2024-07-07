@@ -14,6 +14,11 @@ public class WebDriverManager {
 	}
 
 	private void initDriver(String browser) {
+
+		if (instance != null) { // handling reflection attack
+			throw new IllegalStateException("object already exists");
+		}
+
 		switch (browser) {
 		case "chrome":
 			tlDriver.set(new ChromeDriver());
@@ -31,33 +36,32 @@ public class WebDriverManager {
 	}
 
 	public static WebDriverManager getInstance(String browser) {
-		if(instance == null) {
+		if (instance == null) {
 			synchronized (WebDriverManager.class) {
-				if(instance == null) {
+				if (instance == null) {
 					instance = new WebDriverManager();
 				}
 			}
 		}
-		
-		if(tlDriver.get() == null) {
+
+		if (tlDriver.get() == null) {
 			instance.initDriver(browser);
 		}
-		
+
 		return instance;
 	}
-	
+
 	public WebDriver getDriver() {
 		return tlDriver.get();
 	}
-	
 
 	public static void quitBrowser() {
-		if(tlDriver.get() != null) {
+		if (tlDriver.get() != null) {
 			tlDriver.get().quit();
 			tlDriver.remove();
 		}
 	}
+
 	
-	
-	
+
 }
